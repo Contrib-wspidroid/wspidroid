@@ -90,7 +90,7 @@ Lire les GPIO déclarés fonctionnels dans le Web-Service (config.inc.php) et reto
     
     /* $valTableau est un tableau retourné par le Web-Service contenant toutes les déclarations GPIO effectuées sur la partie serveur */
 
-Information : les commandes GPIO sont effectuées avec l'utilisateur « www-data » (utilisateur web), si cela ne fonctionne pas, vérifier que les droits sur « `/usr/local/bin/gpio` » sont bien « **rwxr-xr-x** ».
+**Information** : les commandes GPIO sont effectuées avec l'utilisateur « www-data » (utilisateur web), si cela ne fonctionne pas, vérifier que les droits sur « `/usr/local/bin/gpio` » sont bien « **rwxr-xr-x** ».
 
 # licence
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">WsPiDroid</span> est mis à disposition selon les termes de la <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">licence Creative Commons Attribution - Pas d&#39;Utilisation Commerciale - Pas de Modification 4.0 International</a>.
