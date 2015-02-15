@@ -52,5 +52,45 @@ La lecture est effectuée depuis le répertoire `/sys/bus/w1/devices/`
   - Une valeur sous forme de tableau en retour : Chacun des enregistrements du tableau contient le nom du capteur (son ID ou son nom si défini par l'utilisateur dans le fichier config.inc.php), et la valeur de température, en degré Celcius, et trois décimales.
 - **get1WireXml()** : Identique à get1WireTab() ci-dessus, mais au lieu de retourner un tableau, le résultat est retourné dans une chaîne sous un format XML.
 
+# Interrogation du Web-Service en PHP
+
+Pour interroger le Web-Service, nous avons besoin d'un client. Ci-dessous nous allons détailler le minimum nécessaire en PHP pour interroger le Web-Service.
+
+Le client a besoin de la bibliothèque NuSoap. Voici ci-dessous les possibilités d'un client en PHP. L'exemple ci-dessus n'est pas un script fonctionnel en l'état, il permet simplement de démontrer comment utiliser les différentes fonctions du web-service.
+
+    /* Déclaration du webService */
+    include('lib/nusoap.php');
+    ini_set("soap.wsdl_cache_enabled", "0");
+    $client = new nusoap_client('$WS_adresse.''http://adresse_webservice/wspi/wspi.php?wsdl');
+    
+    /* Exemples d'interrogation */
+    /* ************************ */
+    /* Pour mettre le GPIO 1 au niveau 1 */
+    /* ********************************* */
+    /* Déclaration des paramètres d'entrée du Web-service */
+    $parametres = array('pin'=>1, 'valeur'=>1, 'cle' =>"Token");
+    /* Execution du web-service et affichage de l'état du pin */
+    echo $client->call('setPin', $parametres);
+    
+    /* Pour lire l'état du GPIO 1 */
+    /* ************************** */
+    $parametres = array('pin'=>$pin, 'cle' =>"Token");
+    echo $client->call('getPin', $parametres);
+    
+    /* Pour lire les déclarations GPIO faite dans le web-service */
+    /* ********************************************************* */
+    $parametres = array('cle' =>"Token", 'litEtat' =>1);
+    $valTableau = $client->call('getMaterielTab', $parametres);
+    
+    /* $valTableau est un tableau retourné par le Web-Service contenant toutes les déclarations GPIO effectuées sur la partie serveur */
+
+Les lignes 1 à 5 sont la déclaration du web-service.
+
+- Les lignes 9 à 14 décrivent comment écrire sur un port GPIO via le web-service.
+- Les lignes 16 à 19 montrent comment lire l'état d'un port GPIO.
+- Les lignes 21 à 24 permettent de retourner la liste des ports déclarés sur le web-service.
+
+Information : les commandes GPIO sont effectuées avec l'utilisateur « www-data » (utilisateur web), si cela ne fonctionne pas, vérifier que les droits sur « `/usr/local/bin/gpio` » sont bien « **rwxr-xr-x** ».
+
 # licence
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">WsPiDroid</span> est mis à disposition selon les termes de la <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">licence Creative Commons Attribution - Pas d&#39;Utilisation Commerciale - Pas de Modification 4.0 International</a>.
