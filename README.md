@@ -52,6 +52,53 @@ La lecture est effectuée depuis le répertoire `/sys/bus/w1/devices/`
   - Une valeur sous forme de tableau en retour : Chacun des enregistrements du tableau contient le nom du capteur (son ID ou son nom si défini par l'utilisateur dans le fichier config.inc.php), et la valeur de température, en degré Celcius, et trois décimales.
 - **get1WireXml()** : Identique à get1WireTab() ci-dessus, mais au lieu de retourner un tableau, le résultat est retourné dans une chaîne sous un format XML.
 
+# Donner les droits au Web-Service
+## Droits d'utiliser l'éxecutable « gpio »
+
+les commandes GPIO sont effectuées par l'utilisateur « **www-data** » (utilisateur web). Cet utilisateur doit dont posséder les droits de lecture et d'exécution du binaire « `/usr/local/bin/gpio` ».
+
+Pour cela, exécuter la commande suivante :
+
+    sudo chmod o+rx /usr/local/bin/gpio
+
+## Droits d'éxecuter des commandes avec l'utilitaire « sudo »
+
+Afin de pouvoir "Arréter" ou "Redémarrer" le Raspberry Pi depuis un client via ce Web-Service, ce dernier doit avoir les droits d'utiliser la commande « **sudo** » pour ces deux opérations.
+
+Il en est de même pour la lecture des sondes DS18b20, qui necessitent que le Web-Service charge les modules « **w1-gpio** » et « **w1-therm** » dans le noyau Linux.
+
+Pour lui donner les droits, nous allons modifier le « **sudoers** », afin d'ajouter quelques commandes à « **www-data** » qui lui seront autorisées par la commande « **sudo** ».
+
+Edition du « **sudoers** »
+
+    sudo visudo
+
+Dans la fenêtre d'édition, nous créons un Alias qui regroupe uniquement les commandes autorisées par « **www-data** » via un « **sudo** ». Par sécurité, on lui autorisera que ce dont a besoin le web-service.
+
+En dessous du commentaire
+
+    # Cmnd alias specification
+
+Ajouter la ligne :
+
+    Cmnd_Alias CMD=/sbin/halt,/sbin/reboot,/sbin/modprobe w1-gpio,/sbin/modprobe w1-therm
+
+L'alias se nomme « **CMD** »
+
+Les commandes « **/sbin/halt** » et « **/sbin/reboot** » permettent au Web-Service d'avoir droit aux commandes « **stop** » et « **reboot** » du Raspberry Pi.
+
+Les commandes « **/sbin/modprobe w1-gpio** » et « **/sbin/modprobe w1-therm** » permettent au Web-Service d'avoir les droits de charger les modules « **w1-gpio** » et « **w1-therm** » et ainsi avoir accès aux données des sondes de température DS18b20.
+
+Vous n'êtes donc pas obligé de mettre toutes ces autorisations si vous ne les utilisez pas toutes.
+
+Toujours dans notre fichier « **sudoers** », ajouter les autorisations sur l'Alias que nous venons de créer au user « **www-data** ».
+
+A ajouter en dessous des autorisations données au user « **pi** », ce qui doit à la fin du fichier vous donner quelque chose du genre.
+
+    #includedir /etc/sudoers.d
+    pi ALL=(ALL) NOPASSWD: ALL
+    www-data ALL=NOPASSWD: CMD
+
 # Interrogation du Web-Service en PHP
 
 Pour interroger le Web-Service, nous avons besoin d'un client. Ci-dessous nous allons détailler le minimum nécessaire en PHP pour interroger le Web-Service.
@@ -90,7 +137,6 @@ Lire les GPIO déclarés fonctionnels dans le Web-Service (config.inc.php) et reto
     
     /* $valTableau est un tableau retourné par le Web-Service contenant toutes les déclarations GPIO effectuées sur la partie serveur */
 
-**Information** : les commandes GPIO sont effectuées avec l'utilisateur « www-data » (utilisateur web), si cela ne fonctionne pas, vérifier que les droits sur « `/usr/local/bin/gpio` » sont bien « **rwxr-xr-x** ».
 
 # licence
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">WsPiDroid</span> est mis à disposition selon les termes de la <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">licence Creative Commons Attribution - Pas d&#39;Utilisation Commerciale - Pas de Modification 4.0 International</a>.
