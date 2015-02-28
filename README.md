@@ -51,6 +51,15 @@ La lecture est effectuée depuis le répertoire `/sys/bus/w1/devices/`
   - Une valeur en entrée : Le Token de sécurité.
   - Une valeur sous forme de tableau en retour : Chacun des enregistrements du tableau contient le nom du capteur (son ID ou son nom si défini par l'utilisateur dans le fichier config.inc.php), et la valeur de température, en degré Celcius, et trois décimales.
 - **get1WireXml()** : Identique à get1WireTab() ci-dessus, mais au lieu de retourner un tableau, le résultat est retourné dans une chaîne sous un format XML.
+- **setPsutil()** : Permet d'obtenir des informations système via le module « **psutil** » sous Python.
+  - Deux valeurs d'entrée : la commande « **psutil** », et le Token de sécurité.
+  - Une valeur en retour : les données au format texte, retourné par « **psutil** »
+
+## Installation du module PsUtil pour Python
+
+Se positionner dans le dossier ou est installé « **WsPiDroid** » et exécuter l'installateur.
+
+    ./install.sh
 
 # Donner les droits au Web-Service
 ## Droits d'utiliser l'éxecutable « gpio »
@@ -81,13 +90,15 @@ En dessous du commentaire
 
 Ajouter la ligne :
 
-    Cmnd_Alias CMD=/sbin/halt,/sbin/reboot,/sbin/modprobe w1-gpio,/sbin/modprobe w1-therm
+    Cmnd_Alias CMD=/sbin/halt,/sbin/reboot,/sbin/modprobe w1-gpio,/sbin/modprobe w1-therm,/usr/bin/python
 
 L'alias se nomme « **CMD** »
 
 Les commandes « **/sbin/halt** » et « **/sbin/reboot** » permettent au Web-Service d'avoir droit aux commandes « **stop** » et « **reboot** » du Raspberry Pi.
 
 Les commandes « **/sbin/modprobe w1-gpio** » et « **/sbin/modprobe w1-therm** » permettent au Web-Service d'avoir les droits de charger les modules « **w1-gpio** » et « **w1-therm** » et ainsi avoir accès aux données des sondes de température DS18b20.
+
+La commande « **/usr/bin/python** » permet d'exécuter des scripts Python.
 
 Vous n'êtes donc pas obligé de mettre toutes ces autorisations si vous ne les utilisez pas toutes.
 
