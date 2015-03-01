@@ -90,13 +90,15 @@ En dessous du commentaire
 
 Ajouter la ligne :
 
-    Cmnd_Alias CMD=/sbin/halt,/sbin/reboot,/sbin/modprobe w1-gpio,/sbin/modprobe w1-therm,/usr/bin/python
+    Cmnd_Alias CMD=/sbin/halt,/sbin/reboot,/sbin/modprobe w1-gpio,/sbin/modprobe w1-therm,/bin/cat,/usr/bin/python
 
 L'alias se nomme « **CMD** »
 
 Les commandes « **/sbin/halt** » et « **/sbin/reboot** » permettent au Web-Service d'avoir droit aux commandes « **stop** » et « **reboot** » du Raspberry Pi.
 
 Les commandes « **/sbin/modprobe w1-gpio** » et « **/sbin/modprobe w1-therm** » permettent au Web-Service d'avoir les droits de charger les modules « **w1-gpio** » et « **w1-therm** » et ainsi avoir accès aux données des sondes de température DS18b20.
+
+La commande « **/bin/cat** » permet de lister des fichiers.
 
 La commande « **/usr/bin/python** » permet d'exécuter des scripts Python.
 
