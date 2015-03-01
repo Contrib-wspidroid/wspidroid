@@ -1,7 +1,7 @@
 # Évolutions en cours ou réalisées :
 - [**Web-Service**] : Envoi de commande Radio via émetteur RF 433Mh (Commande Volets, télécommande,...) via la lib "rcswitch-pi" https://github.com/r10r/rcswitch-pi
-- [**Web-Service**] : Retour d'informations système du Raspberry Pi via PSUtil (charge Cpu, mem, T°CPU)
 - [**Web-Service**] : Lire une distance à l'aide du module Ultrason HC-SR04
+- ~~[Web-Service] : Retour d'informations système du Raspberry Pi via PSUtil (charge Cpu, mem, T°CPU).~~
 - ~~[APK Android] : Au lancement de l'application, nous n'arrivons plus sur la page d'action sur les GPIO, mais sur une page "menu" avec icônes. Il est ainsi possible d'accéder aux nouveautés du Web-service.~~
 - ~~[Web-Service] : Ajout de la possibilité d'envoi d'une commande d'arrêt et de reboot au Raspberry.~~
 - ~~[Web-Service] : Lecture de température via des capteurs DS18B20 (port « 1-wire » GPIO 4). Le web-service lit tous les capteurs connectés et retourne le résultat, soit sous forme XML, soit sous forme de tableau. Toutes les valeurs des capteurs connectés sont retournées sous forme <nom> et <valeur>. Le nom est l'identifiant du capteur relevé, exemple "28-000005adf", mais comme pour le nommage des ports GPIO dans le fichier "config.inc.php", il est possible de le nommé en un nom plus explicite.~~
