@@ -10,6 +10,25 @@
  */
 $token = "DP37TFJTXXX";
 
+/* Connexion à la base de données */
+/* Déclaration de la connexion */
+global $CONFIG, $typebase ;
+$typebase = "mysql"; // Type de base de données. "mysql"
+/* Selon le type de base de données */
+if($typebase == "mysql") {
+	//MySQL parametres
+	$CONFIG = array(
+			'db' => array(
+				'host' => 'localhost',
+				'port' => 3306,
+				'dbname' => 'wspi',
+				'login' => 'wspi',
+				'password' => '123t3dun1',
+    	)
+	);
+}
+
+
 /* Liste des pins que l'on souhaite commander */
 /* Déclaration sous forme : "Nom visible par l'utilisateur" => "Pin" */
 $commandes = array(
