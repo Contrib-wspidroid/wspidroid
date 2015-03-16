@@ -76,7 +76,10 @@ class gpio extends wspi {
 		}
 	
 		/* On retourne le résultat du relevé */
-		if ($this->debug == true) $this->log->write('Fin de l\'execution de getMaterielTab()');
+		if ($this->debug == true) {
+			$this->log->write('Tableau retourné au format JSON = '.json_encode($varRetour));
+			$this->log->write('Fin de l\'execution de getMaterielTab()');
+		}
 		return $varRetour; 	
 	}
 
@@ -110,8 +113,10 @@ class gpio extends wspi {
 		$varRetour .= "</detailResultat></materielResponse>";
 	
 		/* On retourne le résultat du relevé */
-		if ($this->debug == true) $this->log->write('Chaine XML = '.$varRetour);
-		if ($this->debug == true) $this->log->write('Fin de l\'execution de getMaterielXml()');
+		if ($this->debug == true) {
+			$this->log->write('Chaine XML = '.$varRetour);
+			$this->log->write('Fin de l\'execution de getMaterielXml()');
+		}
 		return utf8_decode($varRetour); 		
 	}
 
