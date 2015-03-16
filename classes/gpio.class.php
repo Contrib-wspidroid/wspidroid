@@ -1,35 +1,26 @@
 <?php
+/* *************************************************************** *
+ *       Fonctions Publiques appelées par les Web service          *
+ ***************************************************************** */
+/*                 Contrôle des ports GPIO                         *
+ * *************************************************************** */
+/* Lecture du matériel à commander (Reponse sous forme de Tableau) */
+/* *************************************************************** */
+	
+class gpio extends wspi {
+	
 
-class gpio {
-	
-	private $debug = true;
-	
-	public function __construct() {
-	}
-	
-	// Fonction qui permet de loguer.
-	// *****************************
-	private function addLog($txt) {
-		  if (!file_exists("log.txt")) file_put_contents("log.txt", "");
-		  file_put_contents("log.txt",date("[j/m/y H:i:s]")." - $txt \r\n".file_get_contents("log.txt"));
-	}
-	
 	/* Change la valeur du pin */
 	/* *********************** */
-	public function setPin($pin=0, $valeur, $cle='') {
+	function setPin($pin=0, $valeur, $cle='') {
 		// Variable de débogage.
-		if ($this->debug == true) {
-			/* Chargement des classes Logs */
-			require_once('./classes/log.class.php');
-			$logs = new log();
-			$logs->write('Debug en cours : setPin()');
-		}
+		if ($this->debug == true) $this->log->write('Debug en cours : setPin()');
 
 		// Initialisation des variables.
 		$varRetour = 0;
 	
 		// Vérification de la clé de sécurité, 
-		if (verifcle($cle) != 1) return 9999;
+		if ($this->verifcle($cle) != 1) return 9999;
 	
 		//Definis le PIN en tant que sortie
 		shell_exec('/usr/local/bin/gpio mode '.$pin.' out');
@@ -39,31 +30,34 @@ class gpio {
 		$varRetour = shell_exec('/usr/local/bin/gpio read '.$pin);
 		
 		/* On retourne le résultat du relevé */
-		if ($this->debug == true) $this->addLog('Valeur de retour : '.$varRetour);
-		return $varRetour; 
+		if ($this->debug == true) $this->log->write('Valeur de retour : '.(int)$varRetour);
+		return (int)$varRetour; 
 	}	
 
 	/* Lecture de la valeur du pin */
 	/* *************************** */
-	public function getPin($pin=0, $cle='') {
+	function getPin($pin=0, $cle='') {
 		// Variable de débogage.
-		global $debug;
-		if ($this->debug == true) $this->addLog('Debug en cours : getPin()');
-	
+		if ($this->debug == true) $this->log->write('Debug en cours : getPin()');
+
 		// Initialisation des variables.
 		$varRetour = 0;
 	
 		// Vérification de la clé de sécurité, 
-		if (verifcle($cle) != 1) return 9999;
+		if ($this->verifcle($cle) != 1) return 9999;
 	
 		//Lecture de la valeur du pin
 		$varRetour = shell_exec("/usr/local/bin/gpio read ".$pin);
 		
 		/* On retourne le résultat du relevé */
-		if ($this->debug == true) $this->addLog('Valeur de retour : '.$varRetour);
+		if ($this->debug == true) $this->log->write('Valeur de retour : '.(int)$varRetour);
 		return (int)$varRetour; 
 	}	
 
+	/* ************************************************ *
+	 *       FIN de Contrôle des ports GPIO             *
+	 * ************************************************ */
+	 
 }
 
 ?>
