@@ -4,8 +4,6 @@
  ***************************************************************** */
 /*                 Contrôle des ports GPIO                         *
  * *************************************************************** */
-/* Lecture du matériel à commander (Reponse sous forme de Tableau) */
-/* *************************************************************** */
 	
 class gpio extends wspi {
 	
@@ -54,6 +52,8 @@ class gpio extends wspi {
 		return (int)$varRetour; 
 	}	
 	
+	/* Lecture du matériel à commander (Réponse sous format Tableau) */
+	/* ************************************************************* */
 	function getMaterielTab($cle='',$litEtat=0) {
 		// Variable de débogage.
 		if ($this->debug == true) $this->log->write('Debug en cours : getMaterielTab()');
@@ -65,7 +65,8 @@ class gpio extends wspi {
 		if ($this->verifcle($cle) != 1) return 9999;
 	
 		// Lecture du matériel déclaré et correspondance Pin physique/WiringPi.
-		include('config.inc.php');
+		$commandes = json_decode(_NOMGPIO_,true);
+		$pins = json_decode(_NUMPIN_,true);
 	
 		foreach($commandes as $commande=>$pin) {
 			if($litEtat == 1) {
@@ -95,7 +96,8 @@ class gpio extends wspi {
 		if ($this->verifcle($cle) != 1) return 9999;
 	
 		// Lecture du matériel déclaré et correspondance Pin physique/WiringPi.
-		include('config.inc.php');
+		$commandes = json_decode(_NOMGPIO_,true);
+		$pins = json_decode(_NUMPIN_,true);
 	
 		$j = 0;
 		$varRetour = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><materielResponse><detailResultat>";
