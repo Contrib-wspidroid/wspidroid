@@ -22,7 +22,6 @@ class cmd extends wspi {
 		return $varRetour; 
 	}
 	
-	
 	/*    Envoi d'une commande PsUtil au Raspberry      */
 	/* ************************************************ */
 	function setPsutil($commande='', $cle='') {
@@ -43,7 +42,22 @@ class cmd extends wspi {
 		return $varRetour; 
 	}
 
-
+    /*  Envoi d'une commande Shell RF433 au Raspberry   */
+	/* ************************************************ */
+	function setRF433dec($commande='', $cle='') {
+		// Variables de débogage.
+		if ($this->debug == true) $this->log->write('Debug en cours : setRF433dec()');
+	
+		// Vérification de la clé de sécurité, 
+		if ($this->verifcle($cle) != 1) return 9999;
+	
+		// Envoi de la commande
+		$varRetour = shell_exec("sudo ./codesend $commande");
+	
+		/* On retourne le résultat du relevé */
+		if ($this->debug == true) $this->log->write('Commande setRF433dec "'.$commande.'" lancée.');
+		return $varRetour; 
+	}
 
 }
 
