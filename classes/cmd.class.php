@@ -52,7 +52,7 @@ class cmd extends wspi {
 		if ($this->verifcle($cle) != 1) return 9999;
 	
 		// Envoi de la commande
-		$varRetour = shell_exec("sudo ./codesend $commande");
+		$varRetour = shell_exec('sudo '.getcwd().'/lib/433Utils/codesend '.$commande);
 	
 		/* On retourne le résultat du relevé */
 		if ($this->debug == true) $this->log->write('Commande setRF433dec "'.$commande.'" lancée.');

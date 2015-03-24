@@ -1,5 +1,11 @@
 <?php
 
+// $debug permet de tracer dans un fichier de log à l'emplacement du Web service.
+$debug = true;
+
+/* mise en cache du wsdl */
+$cachewsdl = 0;
+
 /* Token de sécurité */
 /* ***************** */
 /* Le token est un clé de sécurité, c'est un mot de passe pour votre WebService.

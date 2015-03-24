@@ -16,12 +16,17 @@
  *
  *  Le code source est la propriété de son auteur, toute modification est strictement interdite.
  *
+ *  Le Token sera ajouté au nom du fichier log généré afin de ne pas être connu du visiteur.
+ *  Le but est d'empécher la lecture des logs depuis le navigateur si on ne connais pas la clé.
+ *  Ceci afin de palier au probléme d'un serveur web NGINX, dont le htaccess n'a pas d'effet.
+ * 
  **/
  
 class log {
-
+    
 	// @string, Dossier de log
 	private $path = '/logs/';
+    private $token;
 			
 	// @void, Constructeur, utilise le "timezone" pour définir le nom du fichier de log.
 	public function __construct() {
@@ -41,7 +46,9 @@ class log {
   */	
 	public function write($message) { 
 		$date = new DateTime();
-		$log = $this->path . 'log-' . $date->format('Y-m-d').".txt"; 
+        $this->token = strtolower(_TOKEN_);
+        if (!empty($this->token)) $this->token = '-' . substr($this->token,0,8); else  $this->token = "";
+		$log = $this->path . $date->format('Y-m-d') . '-log' . $this->token . '.txt'; 
 		if(is_dir($this->path)) {
 			if(!file_exists($log)) {
 				$fh  = fopen($log, 'a+');

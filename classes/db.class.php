@@ -20,8 +20,6 @@
  *
  **/
 
-require('./log.class.php');
-
 class DB {
 
 	/* ********** Les Attributs ********** */
@@ -61,7 +59,7 @@ class DB {
 		}
 	}
 	
-	private function __destruct() {
+	public function __destruct() {
 	}
 
 	public function deconnect() {
@@ -126,7 +124,7 @@ class DB {
 	}
 
 	/**
-	*	Retourne un tableau à 2 dimension2 contenant tous les enregistrements demandés.
+	*	Retourne un tableau à 2 dimensions contenant tous les enregistrements demandés.
 	*/
 	public function getRows($query) {
 		if(!$this->isConnected) { $this->connect(); }
