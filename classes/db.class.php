@@ -79,12 +79,15 @@ class DB {
 		# Which SQL statement is used 
 		$statement = strtolower($rawStatement[0]);
 			
+		/* Execute le query */
 		if ($statement === 'select' || $statement === 'show') {
+			/* Cas SELECT ou SHOW, retourne une tableau du résultat */
 			$stmt = $this->connection->prepare($query); 
 			$stmt->execute();
 			return $stmt->fetchAll($fetchmode);  
 		}
 		elseif ( $statement === 'insert' ||  $statement === 'update' || $statement === 'delete' ) {
+			/* Cas INSERT, UPDATE ou DELETE, retourne le nombre d'enregistrements impactés par le query */
 			$stmt = $this->connection->prepare($query); 
 			$stmt->execute();
 			return $stmt->rowCount();	
@@ -122,22 +125,6 @@ class DB {
 			die();
 		}
 	}
-
-	/**
-	*	Retourne un tableau à 2 dimensions contenant tous les enregistrements demandés.
-	*/
-	public function getRows($query) {
-		if(!$this->isConnected) { $this->connect(); }
-		try { 
-			$stmt = $this->connection->prepare($query); 
-			$stmt->execute();
-			return $stmt->fetchAll();       
-		} catch(PDOException $e) {
-			echo $this->ExceptionLog($e->getMessage());
-			die();
-		}       
-	}
-
 
 	/**
 	*  Retourne le dernier ID inserré

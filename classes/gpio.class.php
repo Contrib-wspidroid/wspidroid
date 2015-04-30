@@ -17,6 +17,9 @@ class gpio extends wspi {
 
 		// Initialisation des variables.
 		$varRetour = 0;
+		
+		/* charge la class d'enregistrement des données lues dans la base de données */
+		$req = new majbd();
 	
 		// Vérification de la clé de sécurité, 
 		if ($this->verifcle($cle) != 1) return 9999;
@@ -28,6 +31,14 @@ class gpio extends wspi {
 		//Lecture de la valeur du pin
 		$varRetour = shell_exec('/usr/local/bin/gpio read '.$pin);
 		
+		/* On met à jour les données lues dans la base de données */
+		if ((int)$varRetour == 1) $valEtat = 'on'; else $valEtat = 'off';
+		$commande = $req->getNomGPIO($pin);
+		if ($this->debug == true) { $this->log->write('Demande de nom GPIO correspondant au GPIO N° : '.$pin);
+			$this->log->write('Nom de Commande retourné : '.$commande);
+		}
+		$req->majValeurEq($pin, $valEtat);
+			
 		/* On retourne le résultat du relevé */
 		if ($this->debug == true) $this->log->write('Valeur de retour : '.(int)$varRetour);
 		return (int)$varRetour; 
@@ -59,6 +70,9 @@ class gpio extends wspi {
 		// Variable de débogage.
 		if ($this->debug == true) $this->log->write('Debug en cours : getMaterielTab()');
 	
+		/* charge la class d'enregistrement des données lues dans la base de données */
+		$req = new majbd();
+		
 		// Initialisation des variables.
 		$varRetour = array();
 	
@@ -66,15 +80,19 @@ class gpio extends wspi {
 		if ($this->verifcle($cle) != 1) return 9999;
 	
 		// Lecture du matériel déclaré et correspondance Pin physique/WiringPi.
-		$commandes = json_decode(_NOMGPIO_,true);
+		$commandes = $req->listGpio();
 		$pins = json_decode(_NUMPIN_,true);
-	
+
 		foreach($commandes as $commande=>$pin) {
 			if($litEtat == 1) {
 				//Lecture de la valeur du pin
-				$etat = shell_exec("/usr/local/bin/gpio read ".$pins[$pin]);
+				$etat = shell_exec("/usr/local/bin/gpio read ".(_TYPEPIN_=='P' ? (int)$pins[$pin] : (int)$pin));
 			} else $etat = 0;
-			$varRetour[] = array( 'nom' => $commande, 'pin' => $pins[$pin], 'etat' => $etat);
+			$varRetour[] = array( 'nom' => $commande, 'pin' => (_TYPEPIN_=='P' ? (int)$pins[$pin] : (int)$pin), 'etat' => $etat);
+			
+			/* On met à jour les données lues dans la base de données */
+			if ($etat == 1) $valEtat = 'on'; else $valEtat = 'off';
+			$req->majValeurEq((_TYPEPIN_=='P' ? (int)$pins[$pin] : (int)$pin), $valEtat);
 		}
 	
 		/* On retourne le résultat du relevé */
@@ -96,8 +114,11 @@ class gpio extends wspi {
 		// Vérification de la clé de sécurité, 
 		if ($this->verifcle($cle) != 1) return 9999;
 	
+		/* charge la class d'enregistrement des données lues dans la base de données */
+		$req = new majbd();
+		
 		// Lecture du matériel déclaré et correspondance Pin physique/WiringPi.
-		$commandes = json_decode(_NOMGPIO_,true);
+		$commandes = $req->listGpio();
 		$pins = json_decode(_NUMPIN_,true);
 	
 		$j = 0;
@@ -106,12 +127,15 @@ class gpio extends wspi {
 			++$j;
 			if($litEtat == 1) {
 				//Lecture de la valeur du pin
-				$etat = shell_exec("/usr/local/bin/gpio read ".$pins[$pin]);
+				$etat = shell_exec("/usr/local/bin/gpio read ".(_TYPEPIN_=='P' ? (int)$pins[$pin] : (int)$pin));
 			} else $etat = 0;
 			$varRetour .= "<materiel att=".'"'.$j.'"'.">";
 			$varRetour .= "<nom>".$commande."</nom>" ;
-			$varRetour .= "<pin>".(int)$pins[$pin]."</pin>" ;
+			$varRetour .= "<pin>".(_TYPEPIN_=='P' ? (int)$pins[$pin] : (int)$pin)."</pin>" ;
 			$varRetour .= "<etat>".(int)$etat."</etat></materiel>" ;
+			/* On enregistre la valeur dans la base de données */
+			if ($etat == 1) $valEtat = 'on'; else $valEtat = 'off';
+			$req->majValeurEq((_TYPEPIN_=='P' ? (int)$pins[$pin] : (int)$pin), $valEtat);
 		}
 		$varRetour .= "</detailResultat></materielResponse>";
 	

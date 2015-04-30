@@ -26,7 +26,7 @@ class log {
     
 	// @string, Dossier de log
 	private $path = '/logs/';
-    private $token;
+  private $token;
 			
 	// @void, Constructeur, utilise le "timezone" pour définir le nom du fichier de log.
 	public function __construct() {
@@ -46,8 +46,8 @@ class log {
   */	
 	public function write($message) { 
 		$date = new DateTime();
-        $this->token = strtolower(_TOKEN_);
-        if (!empty($this->token)) $this->token = '-' . substr($this->token,0,8); else  $this->token = "";
+		$this->token = strtolower(_TOKEN_);
+		if (!empty($this->token)) $this->token = '-' . substr($this->token,0,8); else  $this->token = "";
 		$log = $this->path . $date->format('Y-m-d') . '-log' . $this->token . '.txt'; 
 		if(is_dir($this->path)) {
 			if(!file_exists($log)) {

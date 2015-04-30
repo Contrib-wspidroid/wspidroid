@@ -31,63 +31,79 @@ autoloader::register();
 /* Création de l'instance log */
 $log= new log;
 
-
-/* Définition des constantes */
-include('config.inc.php');
-define('_TOKEN_', $token);
+/* lecture des variables globales */
+require('config.inc.php');
 
 /* Mise en cache ou pas du wsdl */
 ini_set('soap.wsdl_cache_enabled', $cachewsdl);
 
 
-
-/* Liste des Zones */
-/* *************** */
-/* $action = type de requete : select, update, insert, delete
- * $donnees = au format JSON, les clauses de la condition WHERE
- * si besoin d'une condition ORDER, la mettre en dernier.
- * Exple : {"zone_valide":"1","zone_parent":"1","order by":"zone_position asc"}
- */
-function tbZone($action,$donnees,$cle) {
-	global $debug, $log;
-	/* Déclaration de la classe DB */
-	$db= new DB;
-	/* En cas de debug */
-	if ($debug == true) $log->write('Execution de la méthode : tbZone(\''.$action.'\')');
+/* ***************************************************************** */
+class requete {
 	
-	if($action == "select") {
-		/* On génére le début de la requete */
-		$req = "select * from zones";
-		/* On sélectionne les zones suivant les données */
-		$condition = " where "; 
-		$fin = "";
-		$tbDonnees = json_decode($donnees);
-		foreach ($tbDonnees as $key => $tbDonnee) {
-			if ($key == "order by") $fin = ' order by ' . $tbDonnee;
-			else {
-				$req .= $condition . $key . '=' . $tbDonnee;
-				$condition = " and ";
-			}
+	protected $debug;
+	protected $log;
+	protected $token;
+					
+	function __construct() {
+		global $debug, $token;
+		$this->debug = $debug; 
+		$this->token = $token;
+		/* Déclaration de la classe LOG */
+		$this->log= new log;
+	} 
+	
+	/* 
+	* Fonction de test de la clé de sécurité, retourne "9999" si pas valide.
+	*/
+	function verifcle($cle = '') {
+		if(strtoupper($this->token) != strtoupper($cle)) {
+			if ($this->debug == true) $this->log->write('Erreur : Clé de sécurité non valide ...');
+			return 9999;
+		} else {
+			if ($this->debug == true) $this->log->write('Clé de sécurité vérifiée et valide ...');
+			return 1;
 		}
-		if ($debug == true) $log->write('Requete à executer : ' . $req . $fin);
-		$varRetour = json_encode($db->query($req . $fin));
 	}
+}
+/* ***************************************************************** */
+
+
+/* 
+ * Fonction de test pour vérifier si le Web-service répond 
+ * $cle = La clé de sécurité du Web-Service
+ */
+function getHello($cle='') {
+	global $debug, $log;
+	// Variable de débogage.
+	if ($debug == true) $log->write('Lancement de la fonction de test de réponse du Web-Service : requete->getHello()');
+
+	// Vérification de la clé de sécurité, 
+	$verif = new requete(); if ($verif->verifcle($cle) != 1) return 9999;
 	
-	/* Retour des valeurs renvoyées par la requete */
-	$varRetour = preg_replace('/\\\\u([\da-fA-F]{4})/', '&#x\1;', $varRetour); // Converti les caractères accentués.
-	if ($debug == true) $log->write('Retour de la méthode tbZone(\''.$action.'\') au format json : '.$varRetour);
-	return $varRetour;
+	return 'ok';
 }
 
-
-/* Liste des Equipements 
- * Filtre sur : Zone, Type d'interface et Sans filtre
+/* Fonction permettant d'executer une requete.
+ * $query = La requete à executer.
+ * $cle = La clé de sécurité du Web-Service
  */
-
-/* Liste des Types d'interface */
-
-/* Liste des Equipements d'une catégorie */
-
+function	execute($query, $cle='') {
+	global $debug, $log;
+	
+	// Vérification de la clé de sécurité, 
+	$verif = new requete(); if ($verif->verifcle($cle) != 1) return 9999;
+	
+	/* Déclaration de la classe DB */
+	$db= new DB;
+	/* Execution de la requete */
+	$varRetour = json_encode($db->query($query),JSON_UNESCAPED_UNICODE);
+	
+	/* Retour des valeurs renvoyées par la requete */
+	if ($debug == true) $log->write('Retour de la méthode Execute(\''.$query.'\') au format json : '.$varRetour);
+	return $varRetour;
+}
+	
 
 /* ***************************************************************** */
 
@@ -101,17 +117,26 @@ $link = new lien;
 $server->configureWSDL('requete', $link->getUrlCourante(false));
 
 
-/* Définition de la méthode "tbZone" */
-$server->register('tbZone',											// method name
-		array('action' => 'xsd:string',							// input parameters
-				'donnees' => 'xsd:string', 
-				'cle' => 'xsd:string'),
+/* Définition de la méthode "getHello" pour test réponse du Web-Service */
+$server->register('getHello',										// method name
+		array('cle' => 'xsd:string'),								// input parameters
         array('varRetour' => 'xsd:string'),			// output parameters
-				'wsTbZone',															// namespace (espace de nommage unique)
-				'wsTbZone#tbZone',											// soapaction (fonction)
+				'wsGetHello',														// namespace (espace de nommage unique)
+				'wsGetHello#getHello',									// soapaction (fonction)
 				'rpc',																	// style
 				'encoded',															// use
-				'Execute une requete sur la table zone'	// documentation
+				'Test de réponse du Web-Service' 				// documentation
+);
+/* Définition de la méthode "execute" */
+$server->register('execute',										// method name
+		array('query' => 'xsd:string',							// input parameters
+				'cle' => 'xsd:string'),
+        array('varRetour' => 'xsd:string'),			// output parameters
+				'wsExecute',														// namespace (espace de nommage unique)
+				'wsExecute#Execute',										// soapaction (fonction)
+				'rpc',																	// style
+				'encoded',															// use
+				'Execute une requete '									// documentation
 );
 
 
