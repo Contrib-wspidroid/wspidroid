@@ -19,9 +19,6 @@ class wire extends wspi {
 		/* Variable de débogage */
 		if ($this->debug == true) $this->log->write('Debug en cours : get1WireTab()');
 	
-		/* charge la class d'enregistrement des données lues dans la base de données */
-		$req = new majbd();
-		
 		/* Initialisation des variables */
 		$varRetour = array();
 	
@@ -29,7 +26,7 @@ class wire extends wspi {
 		if ($this->verifcle($cle) != 1) return 9999;
 	
 		/* Lecture du matériel déclaré */
-		$capteurTemp = $req->listWire();
+		$capteurTemp = $this->req->listWire();
 	
 		/* Lecture du nom des capteurs que l'on stock dans un tableau */
 		$varLu = exec('sudo modprobe w1-gpio & $ sudo modprobe w1-therm');
@@ -46,7 +43,7 @@ class wire extends wspi {
 					$varRetour[] = array( 'nom' => $nom, 'code' => $fichier, 'valeur' => $varLu);
 				
 					/* On met à jour les données lues dans la base de données */
-					$req->majValeurEq($fichier, $varLu);
+					$this->req->majValeurEq($fichier, $varLu);
 				}
 			}
 		}
@@ -65,9 +62,6 @@ class wire extends wspi {
 	function get1WireXml($cle='') {
 		// Variable de débogage.
 		if ($this->debug == true) $this->log->write('Debug en cours : get1WireXml()');
-	
-		/* charge la class d'enregistrement des données lues dans la base de données */
-		$req = new majbd();
 			
 		// Initialisation des variables.
 		$varRetour = array();
@@ -98,7 +92,7 @@ class wire extends wspi {
 					$varRetour .= "</temperature>";
 					
 					/* On enregistre la valeur dans la base de données */
-					$req->majValeurEq($fichier, $varLu);
+					$this->req->majValeurEq($fichier, $varLu);
 				}
 			}
 			$varRetour .= "</detailResultat></temperatureResponse>";
@@ -121,9 +115,6 @@ class wire extends wspi {
 		/* Variable de débogage */
 		if ($this->debug == true) $this->log->write('Debug en cours : get1WireUnique()');
 	
-		/* charge la class d'enregistrement des données lues dans la base de données */
-		$req = new majbd();
-		
 		/* Initialisation des variables */
 		$varRetour = '';
 	
@@ -137,7 +128,7 @@ class wire extends wspi {
 		if(substr($nom,0,3) != '28-') {
 			/* Le nom n'est pas l'ID, on recherche l'ID */
 			if ($this->debug == true) $this->log->write('Le nom de l\'équipement est : '.$nom.', on recherche l\'ID');
-			$nom = $req->getIdWire($nom);	
+			$nom = $this->req->getIdWire($nom);	
 			if ($this->debug == true) $this->log->write('Id de l\'équipement trouvé : '.$nom);
 		} else if ($this->debug == true) $this->log->write('Le nom de l\'équipement correspond à son ID qui est : '.$nom);
 		
@@ -145,7 +136,7 @@ class wire extends wspi {
 		$varRetour = exec('cat /sys/bus/w1/devices/'.$nom.'/w1_slave | grep "t=" | awk -F "t=" \'{print $2/1000}\'');
 		
 		/* On met à jour les données lues dans la base de données */
-		$req->majValeurEq($nom, $varRetour);
+		$this->req->majValeurEq($nom, $varRetour);
 		
 		/* On retourne le résultat du relevé */
 		if ($this->debug == true) {
